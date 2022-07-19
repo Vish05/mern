@@ -27,7 +27,7 @@ app.use((error,req,res,next) => {
 })
 
 mongoose.connect(
-    'mongodb+srv://placeadmin:<PASSWORD>@cluster0.b8nkm.mongodb.net/test?retryWrites=true&w=majority'
+    'mongodb+srv://placeadmin:<PASSWORD>@cluster0.b8nkm.mongodb.net/?retryWrites=true&w=majority'
 ).then(() => {
     app.listen(5000);
 }).catch((error) => {
