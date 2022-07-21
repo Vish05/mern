@@ -50,14 +50,15 @@ const singUp = async (req,res,next) => {
         return next(error);
     }
     
-
     const createdUser = new User({
         name,
         email,
-        image: 'https://live.staticflickr.com/7631/26849088292_36fc52ee90_b.jpg',
+        image: req.file.path,
         password,
         places: []
     });
+
+    console.log(createdUser);
 
     try {
         await createdUser.save();
@@ -89,13 +90,16 @@ const login = async (req,res,next) => {
 
     if(!existingUser || existingUser.password !== password) {
         const error = new HttpError(
-            'Could not identified user, credentails seems to be wrong..!!',
+            'Your Username or Password is incorrect..!!',
             401
         );
         return next(error);
     }
 
-    res.status(201).json({message:'Logged In..'});
+    res.status(201).json({
+        message:'Logged In..', 
+        user: existingUser.toObject({getters:true})
+    });
 }
 
 exports.getUsers = getUsers;
