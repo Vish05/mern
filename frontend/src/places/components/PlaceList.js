@@ -2,6 +2,7 @@ import React from 'react';
 
 import Card from '../../shared/components/UIElement/Card';
 import PlaceItem from './PlaceItem';
+import Button from '../../shared/components/FormElements/Button/Button';
 import './PlaceList.css';
 
 const PlaceList =  (props) => {
@@ -10,7 +11,7 @@ const PlaceList =  (props) => {
             <div className='center'>
                 <Card>
                     <h2>No Place Found. Maybe create one?</h2>
-                    <button>Share Place</button>
+                    <Button to="/places/new">Share Place</Button>
                 </Card>
             </div>
         )
@@ -21,12 +22,13 @@ const PlaceList =  (props) => {
             {props.items.map(place => (
                 <PlaceItem key={place.id}  
                     id={place.id} 
-                    image={place.imageUrl} 
+                    image={place.image} 
                     title={place.title} 
                     description={place.description}
                     address={place.address}
                     creator={place.creator}
-                    coordinates={place.location}/>
+                    coordinates={place.location}
+                    onDelete={props.onDeletePlace}/>
             ))}
         </ul>
     )

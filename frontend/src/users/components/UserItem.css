@@ -14,9 +14,25 @@
     color: white;
     background: #292929;
 }
+
+.user-item .no-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    padding: 1rem;
+    color: white;
+    background: #292929;
+}
   
 .user-item a:hover,
 .user-item a:active {
+    background: #ffd900;
+}
+
+.user-item .no-link:hover,
+.user-item .no-link:active {
     background: #ffd900;
 }
   

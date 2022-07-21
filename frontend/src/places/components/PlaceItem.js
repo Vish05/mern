@@ -1,28 +1,81 @@
-import React from 'react';
+import React, {useState, useContext} from 'react';
 
 import Card from '../../shared/components/UIElement/Card';
 import Button from '../../shared/components/FormElements/Button/Button';
+import Modal from '../../shared/components/UIElement/Modal';
+import Map from '../../shared/components/UIElement/Map';
+import ErrorModal from '../../shared/components/UIElement/ErrorModal';
+import LoadingSpinner from '../../shared/components/UIElement/LoadingSpinner';
+import { AuthContext } from '../../shared/context/auth-context';
+import { useHttpClient } from '../../shared/hooks/http-hook';
 import './PlaceItem.css';
 
 const PlaceItem =  (props) => {
-    return (
-        <li className="place-item">
-            <Card className="place-item__content">
-                <div className="place-item__image">
-                    <img src={props.image} alt={props.name} />
-                </div>
-                <div className="place-item__info">
-                    <h2>{props.title}</h2>
-                    <h3>{props.address}</h3>
-                    <p>{props.description}</p>
-                </div>
-                <div className="place-item__actions">
-                    <Button inverse>VIEW ON MAP</Button>
-                    <Button to={`/places/${props.id}`}>EDIT</Button>
-                    <Button danger>DELETE</Button>
-                </div>
-            </Card>
-        </li>
+    const auth = useContext(AuthContext);
+    const [showMap, setShowMap] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
+
+    const openMapHandler = () => setShowMap(true);
+    const closeMapnHanlder = () => setShowMap(false);
+    const showDeleteHandler = () => setShowConfirmModal(true);
+    const cancelDeleteHandler = () => setShowConfirmModal(false);
+    const confirmDeleteHandler = async () => {
+        setShowConfirmModal(false);
+        try{
+            await sendRequest(`http://localhost:5000/api/places/${props.id}`, 'DELETE');
+        } catch(err) {}
+        props.onDelete(props.id);
+    }
+
+    return (   
+        <React.Fragment>
+            <ErrorModal error={error} onClear={clearError} />
+            <Modal show={showMap} 
+                onCancle={closeMapnHanlder}
+                header={props.address}
+                contentClass="place-item__modal-content"
+                footerClass="place-item__modal-actions"
+                footer={<Button onClick={closeMapnHanlder}>CLOSE</Button>}>
+                    <div className='map-container'>
+                        <Map center={props.coordinates} zoom={16}/>
+                    </div>
+            </Modal>
+            <Modal
+                show={showConfirmModal}
+                onCancle={cancelDeleteHandler}
+                header="Are You Sure?" 
+                footerClass="place-item__modal-actions" footer={
+                    <React.Fragment>
+                        <Button inverse onClick={cancelDeleteHandler}>CANCEL</Button>
+                        <Button danger onClick={confirmDeleteHandler}>DELETE</Button>
+                    </React.Fragment>
+                }>
+                <p>Do you want to proceed and delete this place? Please note that it can't be be undone thereafter.</p>
+            </Modal>
+            <li className="place-item">
+                <Card className="place-item__content">
+                    {isLoading && <LoadingSpinner asOverlay />}
+                    <div className="place-item__image">
+                        <img src={props.image} alt={props.name} />
+                    </div>
+                    <div className="place-item__info">
+                        <h2>{props.title}</h2>
+                        <h3>{props.address}</h3>
+                        <p>{props.description}</p>
+                    </div>
+                    <div className="place-item__actions">
+                        <Button onClick={openMapHandler} inverse >VIEW ON MAP</Button>
+                        {auth.userId === props.creatorId && 
+                            <Button to={`/places/${props.id}`}>EDIT</Button>
+                        }
+                        {auth.userId === props.creatorId && 
+                            <Button danger onClick={showDeleteHandler}>DELETE</Button>
+                        }
+                    </div>
+                </Card>
+            </li>
+        </React.Fragment>
     ); 
 }
 
