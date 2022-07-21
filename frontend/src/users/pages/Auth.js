@@ -5,6 +5,7 @@ import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button/Button';
 import ErrorModal from '../../shared/components/UIElement/ErrorModal';
 import LoadingSpinner from '../../shared/components/UIElement/LoadingSpinner';
+import ImageUpload from '../../shared/components/FormElements/ImageUpload';
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -13,7 +14,6 @@ import {
 import useForm from '../../shared/hooks/form-hook';
 import {useHttpClient} from '../../shared/hooks/http-hook';
 import { AuthContext } from '../../shared/context/auth-context';
-import apiClient from "../../http-common";
 import './Auth.css';
 
 const Auth = () => {
@@ -41,18 +41,23 @@ const Auth = () => {
       setFormData(
         {
           ...formState.inputs,
-          name: undefined
+          name: undefined,
+          image: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
     } else {
       setFormData(
         {
-          ...formState.inputs,
-          name: {
-            value: '',
-            isValid: false
-          }
+            ...formState.inputs,
+            name: {
+                value: '',
+                isValid: false
+            },
+            image: {
+                value:null,
+                isValid:false
+            }
         },
         false
       );
@@ -62,6 +67,7 @@ const Auth = () => {
 
 	const authSubmitHandler = async event => {
 		event.preventDefault();
+        console.log(formState.inputs);
 		if (isLoginMode) { 
 			try{
 				const postData = {
@@ -118,6 +124,7 @@ const Auth = () => {
 					onInput={inputHandler}
 					/>
 				)}
+                {!isLoginMode &&  <ImageUpload center id="image" onInput={inputHandler}/> }
 				<Input
 					element="input"
 					id="email"
