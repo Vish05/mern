@@ -86,19 +86,16 @@ const Auth = () => {
 			} catch (err) {} 
 
 		} else {
-			const postData = {
-				name: formState.inputs.name.value,
-				email: formState.inputs.email.value,
-				password: formState.inputs.password.value,
-			};
+            const formData = new FormData();
+            formData.append('name', formState.inputs.name.value);
+            formData.append('email', formState.inputs.email.value);
+            formData.append('password', formState.inputs.password.value);
+            formData.append('image', formState.inputs.image.value)
 			try {
 				const responseData = await sendRequest(
 					"http://localhost:5000/api/users/signup", 
 					"POST",
-					JSON.stringify(postData),
-					{
-						"Content-type": "application/json"
-					}
+					formData
 				);
 				auth.login(responseData.user.id);
 			} catch(error) {}
@@ -124,7 +121,7 @@ const Auth = () => {
 					onInput={inputHandler}
 					/>
 				)}
-                {!isLoginMode &&  <ImageUpload center id="image" onInput={inputHandler}/> }
+                {!isLoginMode &&  <ImageUpload errorText="Please provide an image" center id="image" onInput={inputHandler}/> }
 				<Input
 					element="input"
 					id="email"

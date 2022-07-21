@@ -27,7 +27,7 @@ const PlaceItem =  (props) => {
         } catch(err) {}
         props.onDelete(props.id);
     }
-
+    
     return (   
         <React.Fragment>
             <ErrorModal error={error} onClear={clearError} />
@@ -57,7 +57,7 @@ const PlaceItem =  (props) => {
                 <Card className="place-item__content">
                     {isLoading && <LoadingSpinner asOverlay />}
                     <div className="place-item__image">
-                        <img src={props.image} alt={props.name} />
+                        <img src={`http://localhost:5000/${props.image}`} alt={props.title} />
                     </div>
                     <div className="place-item__info">
                         <h2>{props.title}</h2>
@@ -66,10 +66,10 @@ const PlaceItem =  (props) => {
                     </div>
                     <div className="place-item__actions">
                         <Button onClick={openMapHandler} inverse >VIEW ON MAP</Button>
-                        {auth.userId === props.creatorId && 
+                        {auth.userId === props.creator && 
                             <Button to={`/places/${props.id}`}>EDIT</Button>
                         }
-                        {auth.userId === props.creatorId && 
+                        {auth.userId === props.creator && 
                             <Button danger onClick={showDeleteHandler}>DELETE</Button>
                         }
                     </div>
