@@ -1,4 +1,3 @@
-import React, {useState, useCallback} from 'react';
 import { BrowserRouter, Route, Navigate, Routes} from 'react-router-dom';
 
 import MainNavigation from './shared/components/Navigation/MainNavigation';
@@ -8,24 +7,13 @@ import UserPlaces from './places/pages/UserPlaces';
 import UpdatePlace from './places/pages/UpdatePlace';
 import Auth from './users/pages/Auth';
 import { AuthContext } from './shared/context/auth-context';
-import { Redirect } from 'react-router-dom';
+import { useAuth } from './shared/hooks/auth-hook';
+
 
 function App() {
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
-	const [userId, setUserId] = useState();
-
-	const login = useCallback((uid) => {
-		setIsLoggedIn(true);
-		setUserId(uid);
-	}, []) 
-
-	const logout = useCallback(() => {
-		setIsLoggedIn(false);
-		setUserId(null);
-	}, []);
-
+    const { token, login, logout, userId} = useAuth();
 	let routes;
-	if(isLoggedIn) {
+	if(token) {
 		routes = (
 			<Routes>
 				<Route path='/' exact element={<Users/>} />
@@ -48,7 +36,7 @@ function App() {
 
   	return (
 		<AuthContext.Provider value={{
-			isLoggedIn: isLoggedIn, userId: userId, login:login, logOut:logout 	
+			isLoggedIn: !!token, userId: userId, token:token,  login:login, logOut:logout 	
 		}}>
 			<BrowserRouter>
 				<MainNavigation />

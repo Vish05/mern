@@ -82,7 +82,8 @@ function UpdatePlace() {
                 "PATCH", 
                 JSON.stringify(postData),
                 {
-                    "Content-type": "application/json"
+                    "Content-type": "application/json",
+                    Authorization: 'Bearer '+ auth.token
                 }
             );
             navigate('/' + auth.userId + '/places');
