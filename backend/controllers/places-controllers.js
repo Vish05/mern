@@ -65,7 +65,8 @@ const createPlace = async (req, res, next) => {
         )
     }
 
-    const {title, description,address,creator}  = req.body;
+    const {title, description,address}  = req.body;
+
     let coordinate = getCoordsForAddress(address);
 
     const createdPlace =  new Place({
@@ -74,12 +75,12 @@ const createPlace = async (req, res, next) => {
         address,
         location: coordinate,
         image: req.file.path,
-        creator
+        creator: req.userData.userId
     });
 
     let user;
     try {
-        user = await User.findById(creator);
+        user = await User.findById(req.userData.userId);
     } catch(err) {
         const error = new HttpError(
             'Could not find user by provided Id..!!',
@@ -135,6 +136,14 @@ const updatePlace = async (req, res, next) => {
         );
         return next(error);
     }
+
+    if(place.creator.toString() !== req.userData.userId) {
+        const error = new HttpError(
+            'Your are not allowed to edit this place',
+            401
+        );
+        return next(error);
+    }
     
     place.title = title
     place.description = description;
@@ -169,6 +178,14 @@ const deletePlace = async (req, res, next) => {
         const error = new HttpError(
             'Could not find place for this id.',
             404
+        );
+        return next(error);
+    }
+
+    if(place.creator.id !=req.userData.userId) {
+        const error = new HttpError(
+            'Your are not allowed to delete this place',
+            401
         );
         return next(error);
     }
